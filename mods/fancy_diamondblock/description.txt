@@ -1,0 +1,1 @@
+This is a modification for Minetest which makes the default diamond block more fancy.

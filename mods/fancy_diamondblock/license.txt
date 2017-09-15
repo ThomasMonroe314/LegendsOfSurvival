@@ -1,0 +1,4 @@
+License for everything
+---------------------------------------
+
+CC0 (made by DS-minetest)
