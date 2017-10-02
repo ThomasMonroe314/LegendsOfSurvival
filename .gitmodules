@@ -1,0 +1,3 @@
+[submodule "mods/irc"]
+	path = mods/irc
+	url = ../../minetest-mods/irc.git
