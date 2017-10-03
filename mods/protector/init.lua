@@ -428,7 +428,7 @@ minetest.register_craft({
 	output = "protector:protect",
 	recipe = {
 		{"default:stone", "default:stone", "default:stone"},
-		{"default:stone", "default:gold_ingot", "default:stone"},
+		{"default:stone", "default:diamond", "default:stone"},
 		{"default:stone", "default:stone", "default:stone"},
 	}
 })

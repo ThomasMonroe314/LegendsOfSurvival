@@ -1,3 +1,18 @@
 [submodule "mods/irc"]
 	path = mods/irc
 	url = ../../minetest-mods/irc.git
+[submodule "mods/mesecons"]
+	path = mods/mesecons
+	url = ../../minetest-mods/mesecons.git
+[submodule "mods/digilines"]
+	path = mods/digilines
+	url = ../../minetest-mods/digilines.git
+[submodule "mods/MoreMesecons"]
+	path = mods/MoreMesecons
+	url = ../../minetest-mods/MoreMesecons.git
+[submodule "mods/pipeworks"]
+	path = mods/pipeworks
+	url = ../../minetest-mods/pipeworks.git
+[submodule "mods/moremesecons"]
+	path = mods/moremesecons
+	url = ../../minetest-mods/MoreMesecons.git

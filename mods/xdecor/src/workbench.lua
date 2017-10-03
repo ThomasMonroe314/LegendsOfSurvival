@@ -173,8 +173,8 @@ function workbench.timer(pos)
 	end
 
 	-- Tool's wearing range: 0-65535 | 0 = new condition
-	tool:add_wear(-500)
-	hammer:add_wear(700)
+	tool:add_wear(-1000)
+	hammer:add_wear(100)
 
 	inv:set_stack("tool", 1, tool)
 	inv:set_stack("hammer", 1, hammer)
