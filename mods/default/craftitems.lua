@@ -314,11 +314,13 @@ minetest.register_craftitem("default:tin_ingot", {
 minetest.register_craftitem("default:bronze_ingot", {
 	description = "Bronze Ingot",
 	inventory_image = "default_bronze_ingot.png",
+
 })
 
 minetest.register_craftitem("default:gold_ingot", {
 	description = "Gold Ingot",
-	inventory_image = "default_gold_ingot.png"
+	inventory_image = "default_gold_ingot.png",
+	stack_max = 999,
 })
 
 minetest.register_craftitem("default:mese_crystal_fragment", {
