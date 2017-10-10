@@ -316,7 +316,7 @@ minetest.register_craftitem("default:bronze_ingot", {
 	inventory_image = "default_bronze_ingot.png",
 
 })
-
+	
 minetest.register_craftitem("default:gold_ingot", {
 	description = "Gold Ingot",
 	inventory_image = "default_gold_ingot.png",
