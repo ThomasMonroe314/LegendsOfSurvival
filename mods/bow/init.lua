@@ -215,6 +215,6 @@ minetest.register_craft({
 	recipe = {
 		{"default:flint"},
 		{"default:stick"},
-		{"default:paper"},
+		{"mobs:chicken_feather"},
 	}
 })
