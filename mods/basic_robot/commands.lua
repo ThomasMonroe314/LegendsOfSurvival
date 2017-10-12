@@ -262,7 +262,7 @@ basic_robot.no_teleport_table = {
 
 
 basic_robot.commands.pickup = function(r,name)
-	
+	check_operations(name,1.5,true)
 	if r>8 then return false end
 
 	local pos = basic_robot.data[name].obj:getpos();
