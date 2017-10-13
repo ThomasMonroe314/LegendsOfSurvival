@@ -261,36 +261,6 @@ basic_robot.no_teleport_table = {
 }
 
 
-basic_robot.commands.pickup = function(r,name)
-	check_operations(name,1.5,true)
-	if r>8 then return false end
-
-	local pos = basic_robot.data[name].obj:getpos();
-	local spos = basic_robot.data[name].spawnpos; -- position of spawner block
-	local meta = minetest.get_meta(spos);
-	local inv = minetest.get_meta(spos):get_inventory();
-	local picklist = {};
-	
-	for _,obj in pairs(minetest.get_objects_inside_radius({x=pos.x,y=pos.y,z=pos.z}, r)) do
-		local lua_entity = obj:get_luaentity() 
-		if not obj:is_player() and lua_entity and lua_entity.itemstring then
-			local detected_obj = lua_entity.itemstring or "" 
-			if not basic_robot.no_teleport_table[detected_obj] then -- object on no teleport list 
-				-- put item in chest
-				local stack = ItemStack(lua_entity.itemstring) 
-				picklist[#picklist+1]=detected_obj;
-				if inv:room_for_item("main", stack) then
-					inv:add_item("main", stack);
-				end
-			obj:remove();
-			end
-		end
-	end
-	if not picklist[1] then return nil end
-	return picklist
-end
-
-
 basic_robot.commands.read_node = function(name,dir)
 	local obj = basic_robot.data[name].obj;
 	local pos = pos_in_dir(obj, dir)	
