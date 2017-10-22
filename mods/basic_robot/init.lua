@@ -328,7 +328,7 @@ function getSandboxEnv (name)
 			write = function(i,title,text)
 				if i<=0 or i > 32 then return nil end
 				local inv = minetest.get_meta(basic_robot.data[name].spawnpos):get_inventory();
-				local stack = basic_robot.commands.write_book(name,title,text);
+				local stack = basic_robot.commands.write_book(basic_robot.data[name].owner,title,text);
 				if stack then inv:set_stack("library", i, stack) end
 			end
 		},
