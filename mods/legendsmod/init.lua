@@ -1,4 +1,4 @@
-local path = minetest.get_modpath("server")
+local path = minetest.get_modpath("legendsmod")
 
 print ("[Server Maintenance]")
 
