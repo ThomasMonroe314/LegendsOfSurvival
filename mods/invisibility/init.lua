@@ -1,7 +1,7 @@
 
 invisibility = {}
 
-minetest.register_privledge("invis","lets yo go invisible")
+minetest.register_privilege("invis","lets you go invisible")
 
 -- reset player invisibility if they go offline
 minetest.register_on_leaveplayer(function(player)
