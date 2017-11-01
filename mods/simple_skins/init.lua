@@ -84,7 +84,7 @@ skins.formspec.main = function(name)
 	local formspec = ""
 
 	if skins.invplus or skins.ui then
-		formspec = "size[8,8.6]"
+		formspec = "size[4,8.6]"
 			.. "bgcolor[#08080822;true]"
 	end
 
@@ -145,7 +145,7 @@ unified_inventory.register_page("skins:skins", {
 	title = "Skins",
 	get_formspec = function(player, context)
 		local name = player:get_player_name()
-		return {formspec=skins.formspec.main(name)}
+		return {formspec=skins.formspec.main(name),draw_inventory = false,draw_item_list = false}
 	end,
 
 })
