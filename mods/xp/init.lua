@@ -66,7 +66,7 @@ minetest.register_on_joinplayer(function(player)
 	end
 	xp.level[name] = level
 	xp.xp[name] = XP
-	player:set_nametag_attributes({text = name.."\n"..blue..""..level})
+	player:set_nametag_attributes({text = name..blue.." "..level})
 	xp.update_hud(player,level,XP)
 end)
 
