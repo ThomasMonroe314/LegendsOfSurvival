@@ -285,7 +285,7 @@ minetest.register_chatcommand("setskin", {
 
 		skins.skins[user] = "character_"..tonumber(skin)
 
-		skins.update_player_skin(minetest.get_player_by_name(name))
+		skins.update_player_skin(minetest.get_player_by_name(user))
 
 		minetest.chat_send_player(name,
 			 "** " .. user .. S("'s skin set to") .. " character_" .. skin .. ".png")
