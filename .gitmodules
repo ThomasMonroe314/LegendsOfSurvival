@@ -4,3 +4,6 @@
 [submodule "mods/MoreMesecons"]
 	path = mods/MoreMesecons
 	url = ../../minetest-mods/MoreMesecons.git
+[submodule "mods/xp"]
+	path = mods/xp
+	url = https://github.com/ThomasMonroe314/xp.git
