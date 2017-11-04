@@ -37,14 +37,14 @@ end
 function xp.update_hud(player,level,XP)
 	local name = player:get_player_name()
 	if xp.huds[name] then
-		player:hud_change(xp.huds[name],"text","Level: "..level.."\nXP: "..XP.."\nXP needed: "..(math.floor(1.15^level)+100-XP))
+		player:hud_change(xp.huds[name],"text","Level: "..level.."\nXP: "..XP.."\nXP needed: "..(xp.levelfunc(level)-XP))
 	else
 		xp.huds[name] = player:hud_add({
 			hud_elem_type = "text",
 			position = {x = 0, y = 0.5},
 			offset = {x = 10, y = 0},
 			scale = {x = 100, y = 100},
-			text = "Level: "..level.."\nXP: "..XP.."\nXP for next level: "..(math.floor(1.15^level)+100),
+			text = "Level: "..level.."\nXP: "..XP.."\nXP needed: "..xp.levelfunc(level),
 			number = 0xFFFFFF,
 			alignment = {x = 1, y = 0.5},
 			direction = 2,
