@@ -80,8 +80,8 @@ end)
 
 minetest.register_on_dignode(function(pos, oldnode, digger)
 	local XP = xp.values[oldnode.name]
-	if digger.is_fake_player then return end
 	if digger then
+		if digger.is_fake_player then return end
 		local name = digger:get_player_name()
 		if XP and name and xp.level[name] then
 			XP = XP*(math.ceil(xp.level[name]/30))
