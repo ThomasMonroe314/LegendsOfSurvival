@@ -10,7 +10,7 @@ skins.modpath = minetest.get_modpath("simple_skins")
 skins.invplus = minetest.get_modpath("inventory_plus")
 skins.sfinv = minetest.get_modpath("sfinv")
 skins.ui = minetest.get_modpath("unified_inventory")
-
+skins.playerlist = {}
 
 -- Load support for intllib.
 local MP = minetest.get_modpath(minetest.get_current_modname())
@@ -28,7 +28,7 @@ local f
 while true do
 	f = io.open(skins.modpath .. "/textures/character_" .. id .. ".png")
 	if not f then break end
-	if id>31 then break end
+--	if id>31 then break end
 	f:close()
 	skins.add("character_" .. id)
 	id = id + 1
@@ -50,6 +50,7 @@ for _, i in pairs(skins.list) do
 	data = data or {}
 	skins.meta[i].name = data.name or ""
 	skins.meta[i].author = data.author or ""
+	skins.meta[i].owner = data.owner or ""
 end
 
 
@@ -77,6 +78,20 @@ end
 skins.load()
 
 
+--get player skinlist
+skins.get_playerlist = function(name)
+	local list = {}
+	for i = 1, #skins.list do
+		if skins.meta[ skins.list[i] ].owner == "" or skins.meta[ skins.list[i] ].owner == name then
+			list[#list+1] = skins.list[i]
+			minetest.chat_send_all(list[#list])
+		end
+	end
+	skins.playerlist[name] = list
+	minetest.chat_send_all("test")
+end
+
+
 -- skin selection page
 skins.formspec = {}
 skins.formspec.main = function(name)
@@ -94,11 +109,11 @@ skins.formspec.main = function(name)
 	local meta
 	local selected = 1
 
-	for i = 1, #skins.list do
+	for i = 1, #skins.playerlist[name] do
 
-		formspec = formspec .. skins.meta[ skins.list[i] ].name .. ","
+		formspec = formspec .. skins.meta[ skins.playerlist[name][i] ].name .. ","
 
-		if skins.skins[name] == skins.list[i] then
+		if skins.skins[name] == skins.playerlist[name][i] then
 			selected = i
 			meta = skins.meta[ skins.skins[name] ]
 		end
@@ -159,9 +174,9 @@ minetest.register_on_player_receive_fields(function(player, context, fields)
 
 		local index = event.index
 
-		if index > id then index = id end
+		if index > #skins.playerlist[name] then index = #skins.playerlist[name] end
 
-		skins.skins[name] = skins.list[index]
+		skins.skins[name] = skins.playerlist[name][index]
 		skins.update_player_skin(player)
 
 		unified_inventory.set_inventory_formspec(player,"skins:skins")
@@ -191,9 +206,9 @@ sfinv.register_page("skins:skins", {
 
 			local index = event.index
 
-			if index > id then index = id end
+			if index > #skins.playerlist[name] then index = #skins.playerlist[name] end
 
-			skins.skins[name] = skins.list[index]
+			skins.skins[name] = skins.playerlist[name][index]
 
 			skins.update_player_skin(player)
 
@@ -217,6 +232,9 @@ end
 minetest.register_on_joinplayer(function(player)
 
 	local name = player:get_player_name()
+	
+	-- Get the custom skinlist for this player
+	skins.get_playerlist(name)
 
 	-- do we already have a skin in player attributes?
 	local skin = player:get_attribute("simple_skins:skin")
@@ -256,9 +274,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 		local index = event.index
 
-		if index > id then index = id end
+		if index > #skins.playerlist[name] then index = #skins.playerlist[name] end
 
-		skins.skins[name] = skins.list[index]
+		skins.skins[name] = skins.playerlist[name][index]
 
 		if skins.invplus then
 			inventory_plus.set_inventory_formspec(player,
