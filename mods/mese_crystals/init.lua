@@ -122,7 +122,11 @@ minetest.register_craftitem("mese_crystals:mese_crystal_seed", {
 			if node1.name == "air" then 
 				itemstack:take_item()
 				node.name = "mese_crystals:mese_crystal_ore1"
-				minetest.place_node(pos1, node)
+				--minetest.place_node(pos1, node)
+				if minetest.is_protected(pos1, user:get_player_name()) then
+					return
+				end
+				minetest.add_node(pos1, node)
 				return itemstack
 			end
 		end
