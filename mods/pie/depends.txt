@@ -1,0 +1,4 @@
+default
+hunger?
+stamina?
+lucky_block?

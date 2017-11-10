@@ -12,14 +12,10 @@ minetest.register_craftitem("farming:rhubarb", {
 })
 
 -- rhubarb pie
-minetest.register_craftitem("farming:rhubarb_pie", {
-	description = S("Rhubarb Pie"),
-	inventory_image = "farming_rhubarb_pie.png",
-	on_use = minetest.item_eat(6),
-})
+pie.register_pie("rhubarbpie","Rhubarb Pie","farming")
 
 minetest.register_craft({
-	output = "farming:rhubarb_pie",
+	output = "farming:rhubarbpie_0",
 	recipe = {
 		{"", "farming:sugar", ""},
 		{"farming:rhubarb", "farming:rhubarb", "farming:rhubarb"},
