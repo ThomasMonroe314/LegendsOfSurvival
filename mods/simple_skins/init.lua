@@ -85,6 +85,14 @@ skins.get_playerlist = function(name)
 		if skins.meta[ skins.list[i] ].owner == "" or skins.meta[ skins.list[i] ].owner == name then
 			list[#list+1] = skins.list[i]
 		end
+		if string.match(skins.meta[ skins.list[i] ].owner,",") then
+			for x in string.gmatch(skins.meta[ skins.list[i] ].owner, '([^,]+)') do
+				if x==name then
+					list[#list+1] = skins.list[i]
+					minetest.chat_send_all(list[#list])
+				end
+			end
+		end
 	end
 	skins.playerlist[name] = list
 end
