@@ -100,23 +100,7 @@ minetest.register_node("octutool:ladder", {
 	legacy_wallmounted = true,
 	sounds = default.node_sound_wood_defaults(),
 })
-minetest.register_node("octutool:box", {
-	tiles = {"octu_cart_bottom.png", "octu_cart_side.png", "octu_cart_side.png", "octu_cart_side.png", "octu_cart_side.png"},
-        paramtype = "light",
-	drawtype = "nodebox",
-	node_box = {
-		type = "fixed",
-		fixed = {
-			{-0.5, -0.45, -0.5, 0.5, 0.5, -0.5+1/16},
-			{-0.5, -0.45, -0.5, -0.5+1/16, 0.5, 0.5},
-			{0.5, -0.5, 0.5, -0.5, 0.5, 0.5-1/16},
-			{0.5, -0.5, 0.5, 0.5-1/16, 0.5, -0.5},
 
-			{-0.5, -0.5, -0.5, 0.5, -0.3, 0.5},
-		},
-	},
-	groups = {oddly_breakable_by_hand=3, not_in_creative_inventory=1},
-})
 minetest.register_craft({
 	output = 'octutool:pick',
 	recipe = {
@@ -178,13 +162,6 @@ minetest.register_craft({
 		{'octutool:string', '', 'octutool:string'},
 	}
 })
-minetest.register_craft({
-	output = 'octutool:box',
-	recipe = {
-		{'default:wood', '', 'default:wood'},
-		{'default:wood', 'default:wood', 'default:wood'},
-		{'default:wood', 'default:wood', 'default:wood'},
-	}
-})
+
 
 
