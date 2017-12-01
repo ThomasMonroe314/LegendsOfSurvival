@@ -126,6 +126,14 @@ minetest.register_craft({
 	}
 })
 minetest.register_craft({
+	output = 'octutool:sword',
+	recipe = {
+		{'', 'octutool:mese', ''},
+		{'', 'octutool:mese', ''},
+		{'', 'default:stick', ''},
+	}
+})
+minetest.register_craft({
 	output = 'octutool:axe',
 	recipe = {
 		{'octutool:mese', 'octutool:mese', ''},
