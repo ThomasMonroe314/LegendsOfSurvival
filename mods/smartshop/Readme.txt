@@ -1,8 +1,5 @@
-Licenses: code and media CC0
-Version: 4r
-Name: smartshop
-Created by: UjEdwin
-
+License: CC0
+Version: 5
 
 Like the title says, this is a smart and easy shop, that will also fit everywhere.
 

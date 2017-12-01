@@ -21,8 +21,6 @@ smartshop.use_offer=function(pos,player,n)
 	smartshop.receive_fields(player,pressed)
 	smartshop.user[player:get_player_name()]=nil
 	smartshop.update(pos)
-
-
 end
 
 smartshop.get_offer=function(pos)
@@ -251,11 +249,17 @@ smartshop.showform=function(pos,player,re)
 	local inv = meta:get_inventory()
 	local gui=""
 	local spos=pos.x .. "," .. pos.y .. "," .. pos.z
-	local owner=meta:get_string("owner")==player:get_player_name()
-	if minetest.check_player_privs(player:get_player_name(), {protection_bypass=true}) then owner=true end
+	local uname=player:get_player_name()
+	local owner=meta:get_string("owner")==uname
+	if minetest.check_player_privs(uname, {protection_bypass=true}) then owner=true end
 	if re then owner=false end
-	smartshop.user[player:get_player_name()]=pos
+	smartshop.user[uname]=pos
 	if owner then
+		if meta:get_int("type")==0 and not (minetest.check_player_privs(uname, {creative=true}) or minetest.check_player_privs(uname, {give=true})) then
+			meta:set_int("creative",0)
+			meta:set_int("type",1)
+			creative=0
+		end
 		gui=""
 		.."size[8,10]"
 		.."button_exit[6,0;1.5,1;customer;Customer]"
