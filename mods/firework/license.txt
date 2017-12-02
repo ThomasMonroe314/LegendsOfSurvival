@@ -1,0 +1,26 @@
+License of source code
+----------------------
+
+Copyright (C) 2017 Plebs
+
+Permission is hereby granted, free of charge, to the owners of Minetest
+Legends of Survial GameWorld known as ThomasMonroe and CalebDavis to use this Software
+and associated files for the limited time of November 1, 2017 to May 31, 2018.
+it does not permit any kind of distribution, copy, merge, publish, sublicensing and/or
+selling of the software or parts of it.
+
+
+The above copyright notice and this permission notice must not be removed from the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+
+
+Licenses of media (textures)
+----------------------------
+
+Copyright (C) 2017 Plebs
