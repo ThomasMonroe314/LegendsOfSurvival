@@ -150,9 +150,11 @@ end
 function workbench.fields(pos, _, fields)
 	if fields.quit then return end
 	local meta = minetest.get_meta(pos)
-	workbench:set_formspec(meta, fields.back    and 1 or
-				     fields.craft   and 2 or
-				     fields.storage and 3)
+	local id = fields.back and 1 or
+		   fields.craft and 2 or
+		   fields.storage and 3
+	if not id then return end
+	workbench:set_formspec(meta, id)
 end
 
 function workbench.dig(pos)
@@ -173,8 +175,8 @@ function workbench.timer(pos)
 	end
 
 	-- Tool's wearing range: 0-65535 | 0 = new condition
-	tool:add_wear(-1000)
-	hammer:add_wear(100)
+	tool:add_wear(-500)
+	hammer:add_wear(700)
 
 	inv:set_stack("tool", 1, tool)
 	inv:set_stack("hammer", 1, hammer)
