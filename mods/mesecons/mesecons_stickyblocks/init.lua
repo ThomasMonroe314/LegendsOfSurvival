@@ -14,3 +14,13 @@ minetest.register_node("mesecons_stickyblocks:sticky_block_all", {
 		return connected
 	end
 })
+
+minetest.register_craft({
+	output = "mesecons_stickyblocks:sticky_block_all",
+	recipe = {
+		{"","mesecons_materials:glue",""},
+		{"mesecons_materials:glue","mesecons_materials:glue","mesecons_materials:glue"},
+		{"","mesecons_materials:glue",""}
+	}
+}
+)
