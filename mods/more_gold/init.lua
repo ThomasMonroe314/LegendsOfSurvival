@@ -93,7 +93,7 @@ minetest.register_craft({
 })
 -- reverse crafting recipes --
 minetest.register_craft({
-	output = 'default:gold_block 9',
+	output = 'default:goldblock 9',
 	recipe = {'more_gold:refined_gold'},
 })
 minetest.register_craft({
