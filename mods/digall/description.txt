@@ -1,1 +1,0 @@
-Enable players to dig nodes efficiently.
