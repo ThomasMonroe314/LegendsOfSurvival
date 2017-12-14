@@ -91,3 +91,24 @@ minetest.register_craft({
 		{'more_gold:true_gold', 'more_gold:true_gold', 'more_gold:true_gold'},
 	}
 })
+-- reverse crafting recipes --
+minetest.register_craft({
+	output = 'default:gold_block 9',
+	recipe = {'more_gold:refined_gold'},
+})
+minetest.register_craft({
+	output = 'more_gold:refined_gold 9',
+	recipe = {'more_gold:purified_gold'},
+})
+minetest.register_craft({
+	output = 'more_gold:purified_gold 9',
+	recipe = {'more_gold:radiant_gold'},
+})
+minetest.register_craft({
+	output = 'more_gold:radiant_gold 9',
+	recipe = {'more_gold:true_gold'},
+})
+minetest.register_craft({
+	output = 'more_gold:true_gold 9',
+	recipe = {'more_gold:legendary_gold'},
+})
