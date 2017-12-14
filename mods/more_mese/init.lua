@@ -92,7 +92,7 @@ minetest.register_craft({
 })
 -- reverse crafting recipes --
 minetest.register_craft({
-	output = "default:meseblock 9",
+	output = "default:mese 9",
 	recipe = {{'more_mese:hard_mese'}},
 })
 minetest.register_craft({
