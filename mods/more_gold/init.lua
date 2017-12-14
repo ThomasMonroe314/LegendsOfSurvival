@@ -106,7 +106,7 @@ minetest.register_craft({
 })
 minetest.register_craft({
 	output = 'more_gold:radiant_gold 9',
-	recipe = {{'more_gold:true_gold'},
+	recipe = {{'more_gold:true_gold'}},
 })
 minetest.register_craft({
 	output = 'more_gold:true_gold 9',
