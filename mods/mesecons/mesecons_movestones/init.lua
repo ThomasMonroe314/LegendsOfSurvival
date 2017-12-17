@@ -71,8 +71,8 @@ function mesecon.register_movestone(name, def, is_sticky)
 		local backpos = vector.subtract(pos, direction)
 
 		-- ### Step 1: Push nodes in front ###
-		local maxpush = mesecon.setting("movestone_max_push", 50)
-		local maxpull = mesecon.setting("movestone_max_pull", 50)
+		local maxpush = mesecon.setting("movestone_max_push", 3)
+		local maxpull = mesecon.setting("movestone_max_pull", 3)
 		local success, stack, oldstack = mesecon.mvps_push(frontpos, direction, maxpush)
 		if success then
 			mesecon.mvps_process_stack(stack)
