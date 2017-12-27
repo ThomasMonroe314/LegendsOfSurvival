@@ -85,6 +85,7 @@ local function wielder_on(data, wielder_pos, wielder_node)
 		is_fake_player = true,
 		set_inventory_formspec = delay(),
 		getpos = delay(vector.subtract(wielder_pos, assumed_eye_pos)),
+		get_pos = delay(vector.subtract(wielder_pos, assumed_eye_pos)),
 		get_hp = delay(20),
 		get_inventory = delay(inv),
 		get_wielded_item = delay(wieldstack),
