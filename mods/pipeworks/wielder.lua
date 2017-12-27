@@ -107,6 +107,9 @@ local function wielder_on(data, wielder_pos, wielder_node)
 		set_bone_position = delay(),
 		hud_change = delay(),
 		get_breath = delay(11),
+		get_eye_offset = function()
+			return {x=0,y=0,z=0},{x=0,y=0,z=0}
+		end
 		-- TODO "implement" all these
 		-- set_armor_groups
 		-- get_armor_groups
