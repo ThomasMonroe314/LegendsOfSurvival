@@ -35,64 +35,65 @@ function hbhunger.item_eat(hunger_change, replace_with_item, poisen, heal)
 			local name = user:get_player_name()
 			local h = tonumber(hbhunger.hunger[name])
 			local hp = user:get_hp()
+
 			if user.is_fake_player == false then
 				minetest.sound_play("hbhunger_eat_generic", {
 					object = user,
 					max_hear_distance = 10,
 					gain = 1.0
 				})
-			end
-			-- Saturation
-			if h < 30 and hunger_change then
+				
+				-- Saturation
+				if h < 30 and hunger_change then
 
-				h = h + hunger_change
+					h = h + hunger_change
 
-				if h > 30 then h = 30 end
+					if h > 30 then h = 30 end
 
-				hbhunger.hunger[name] = h
-				hbhunger.set_hunger(user)
-			end
+					hbhunger.hunger[name] = h
+					hbhunger.set_hunger(user)
+				end
 
-			-- Healing
-			if hp < 20 and heal then
+				-- Healing
+				if hp < 20 and heal then
 
-				hp = hp + heal
+					hp = hp + heal
 
-				if hp > 20 then hp = 20 end
+					if hp > 20 then hp = 20 end
 
-				user:set_hp(hp)
-			end
+					user:set_hp(hp)
+				end
 
-			-- Poison
-			if poisen then
+				-- Poison
+				if poisen then
 
-				--set hud-img
-				poisenp(1.0, poisen, 0, user)
-			end
+					--set hud-img
+					poisenp(1.0, poisen, 0, user)
+				end
 
-			if replace_with_item then
+				if replace_with_item then
 
-				if itemstack:is_empty() then
+					if itemstack:is_empty() then
 
-					itemstack:add_item(replace_with_item)
-				else
-					local inv = user:get_inventory()
-
-					if inv:room_for_item("main", {name = replace_with_item}) then
-
-						inv:add_item("main", replace_with_item)
+						itemstack:add_item(replace_with_item)
 					else
-						local pos = user:getpos()
+						local inv = user:get_inventory()
 
-						pos.y = math.floor(pos.y + 0.5)
+						if inv:room_for_item("main", {name = replace_with_item}) then
 
-						core.add_item(pos, replace_with_item)
+							inv:add_item("main", replace_with_item)
+						else
+							local pos = user:getpos()
+
+							pos.y = math.floor(pos.y + 0.5)
+
+							core.add_item(pos, replace_with_item)
+						end
 					end
 				end
+
 			end
-
 		end
-
 		return itemstack
 	end
 end
