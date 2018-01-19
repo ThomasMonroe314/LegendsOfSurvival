@@ -389,8 +389,8 @@ if pipeworks.enable_node_breaker then
 		}
 	})
 	-- aliases for when someone had technic installed, but then uninstalled it but not pipeworks
-	minetest.register_alias("technic:nodebreaker_off", "pipeworks:nodebreaker_off")
-	minetest.register_alias("technic:nodebreaker_on", "pipeworks:nodebreaker_on")
+	minetest.register_alias("technic:nodebreaker_off", "pipeworks:nodebreaker_offf")
+	minetest.register_alias("technic:nodebreaker_on", "pipeworks:nodebreaker_onn")
 	minetest.register_alias("technic:node_breaker_off", "pipeworks:nodebreaker_off")
 	minetest.register_alias("technic:node_breaker_on", "pipeworks:nodebreaker_on")
 	-- turn legacy auto-tree-taps into node breakers

@@ -129,4 +129,5 @@ trashmouth.simplemask = {
 	"whore",
 	"wtf",
 	"^^^",
+	"####",
 }
