@@ -30,69 +30,62 @@ function hbhunger.item_eat(hunger_change, replace_with_item, poisen, heal)
 
 	return function(itemstack, user, pointed_thing)
 
-		if itemstack:take_item() ~= nil and user ~= nil then
+		if itemstack:take_item() ~= nil and user ~= nil and not user.is_fake_player then
 
 			local name = user:get_player_name()
 			local h = tonumber(hbhunger.hunger[name])
 			local hp = user:get_hp()
 
-			if user.is_fake_player == false then
-				minetest.sound_play("hbhunger_eat_generic", {
-					object = user,
-					max_hear_distance = 10,
-					gain = 1.0
-				})
+			minetest.sound_play("hbhunger_eat_generic", {
+				object = user,
+				max_hear_distance = 10,
+				gain = 1.0
+			})
 				
-				-- Saturation
-				if h < 30 and hunger_change then
+			-- Saturation
+			if h < 30 and hunger_change then
 
-					h = h + hunger_change
+				h = h + hunger_change
 
-					if h > 30 then h = 30 end
+				if h > 30 then h = 30 end
+				hbhunger.hunger[name] = h
+				hbhunger.set_hunger(user)
+			end
 
-					hbhunger.hunger[name] = h
-					hbhunger.set_hunger(user)
-				end
+			-- Healing
+			if hp < 20 and heal then
+				hp = hp + heal
 
-				-- Healing
-				if hp < 20 and heal then
+				if hp > 20 then hp = 20 end
 
-					hp = hp + heal
+				user:set_hp(hp)
+			end
 
-					if hp > 20 then hp = 20 end
+			-- Poison
+			if poisen then
 
-					user:set_hp(hp)
-				end
+				--set hud-img
+				poisenp(1.0, poisen, 0, user)
+			end
 
-				-- Poison
-				if poisen then
+			if replace_with_item then
 
-					--set hud-img
-					poisenp(1.0, poisen, 0, user)
-				end
+				if itemstack:is_empty() then
 
-				if replace_with_item then
+					itemstack:add_item(replace_with_item)
+				else
+					local inv = user:get_inventory()
 
-					if itemstack:is_empty() then
-
-						itemstack:add_item(replace_with_item)
+					if inv:room_for_item("main", {name = replace_with_item}) then
+						inv:add_item("main", replace_with_item)
 					else
-						local inv = user:get_inventory()
-
-						if inv:room_for_item("main", {name = replace_with_item}) then
-
-							inv:add_item("main", replace_with_item)
-						else
-							local pos = user:getpos()
-
-							pos.y = math.floor(pos.y + 0.5)
-
-							core.add_item(pos, replace_with_item)
-						end
+						local pos = user:getpos()
+						pos.y = math.floor(pos.y + 0.5)
+						core.add_item(pos, replace_with_item)
 					end
 				end
-
 			end
+
 		end
 		return itemstack
 	end
