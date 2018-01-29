@@ -39,11 +39,11 @@ function toggle_pvp(localname)
 		})
 
 		-- Change nametag
-		--local nametag = player:get_nametag_attributes()
-		--player:set_nametag_attributes({
-		      --text = nametag.text,
-		      --color = {a=255, r=222, g=2, b=3},
-		--})
+		local nametag = player:get_nametag_attributes()
+		player:set_nametag_attributes({
+		      text = nametag.text,
+		      color = {a=255, r=222, g=2, b=3},
+		})
 		return
 	else
 		pvptable[localname] = 0
@@ -54,11 +54,11 @@ function toggle_pvp(localname)
 		player:hud_remove(huds[localname])
 
 		-- Change nametag
-		--local nametag = player:get_nametag_attributes()
-		--player:set_nametag_attributes({
-		      --text = nametag.text,
-		      --color = {a=255, r=255, g=255, b=255},
-		--})
+		local nametag = player:get_nametag_attributes()
+		player:set_nametag_attributes({
+		      text = nametag.text,
+		      color = {a=255, r=255, g=255, b=255},
+		})
 		return
 	end
 end
