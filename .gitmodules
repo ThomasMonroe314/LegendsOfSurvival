@@ -4,3 +4,6 @@
 [submodule "mods/MoreMesecons"]
 	path = mods/MoreMesecons
 	url = ../../minetest-mods/MoreMesecons.git
+[submodule "mods/staffbadges"]
+	path = mods/staffbadges
+	url = ../staffbadges.git
