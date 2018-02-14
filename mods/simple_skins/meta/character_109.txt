@@ -1,3 +1,3 @@
-name = "Angelwingz",
-author = "Angelwingz",
-owner = "Angelwingz",
+name = "bomberman",
+author = "bomberman",
+owner = "bomberman",
