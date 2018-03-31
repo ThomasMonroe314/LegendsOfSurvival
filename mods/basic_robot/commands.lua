@@ -49,7 +49,7 @@ local function pos_in_dir(obj, dir) -- position after we move in specified direc
 	elseif dir ==  13 then -- forward_up
 		pos.y=pos.y+1
 	elseif dir ==  14 then -- backward_up
-		yaw = yaw + pi; pos.y=pos.y-1
+		yaw = yaw + pi; pos.y=pos.y+1
 	end
 	
 	if dir ~= 5 and dir ~= 6 then 
@@ -277,35 +277,35 @@ basic_robot.no_teleport_table = {
 }
 
 
---basic_robot.commands.pickup = function(r,name)
+basic_robot.commands.pickup = function(r,name)
 	
-	--if r>8 then return false end
+	if r>8 then return false end
 
-	--local pos = basic_robot.data[name].obj:getpos();
-	--local spos = basic_robot.data[name].spawnpos; -- position of spawner block
-	--local meta = minetest.get_meta(spos);
-	--local inv = minetest.get_meta(spos):get_inventory();
-	--local picklist = {};
+	local pos = basic_robot.data[name].obj:getpos();
+	local spos = basic_robot.data[name].spawnpos; -- position of spawner block
+	local meta = minetest.get_meta(spos);
+	local inv = minetest.get_meta(spos):get_inventory();
+	local picklist = {};
 	
-	--for _,obj in pairs(minetest.get_objects_inside_radius({x=pos.x,y=pos.y,z=pos.z}, r)) do
-		--local lua_entity = obj:get_luaentity() 
-		--if not obj:is_player() and lua_entity and lua_entity.itemstring then
-			--local detected_obj = lua_entity.itemstring or "" 
-			--if not basic_robot.no_teleport_table[detected_obj] then -- object on no teleport list 
+	for _,obj in pairs(minetest.get_objects_inside_radius({x=pos.x,y=pos.y,z=pos.z}, r)) do
+		local lua_entity = obj:get_luaentity() 
+		if not obj:is_player() and lua_entity and lua_entity.itemstring then
+			local detected_obj = lua_entity.itemstring or "" 
+			if not basic_robot.no_teleport_table[detected_obj] then -- object on no teleport list 
 				-- put item in chest
-				--local stack = ItemStack(lua_entity.itemstring) 
-				--picklist[#picklist+1]=detected_obj;
-				--if inv:room_for_item("main", stack) then
-					--inv:add_item("main", stack);
-					--obj:setpos({x=0,y=0,z=0}) -- no dupe
-				--end
-			--obj:remove();
-			--end
-		--end
-	--end
-	--if not picklist[1] then return nil end
-	--return picklist
---end
+				local stack = ItemStack(lua_entity.itemstring) 
+				picklist[#picklist+1]=detected_obj;
+				if inv:room_for_item("main", stack) then
+					inv:add_item("main", stack);
+					obj:setpos({x=0,y=0,z=0}) -- no dupe
+				end
+			obj:remove();
+			end
+		end
+	end
+	if not picklist[1] then return nil end
+	return picklist
+end
 
 
 basic_robot.commands.read_node = function(name,dir)
@@ -571,7 +571,7 @@ local register_robot_button = function(R,G,B,type)
 		on_punch = function(pos, node, player)
 			local name = player:get_player_name(); if name==nil then return end
 			local round = math.floor;
-			local r = 32; local ry = 2*r; -- note: this is skyblock adjusted
+			local r = basic_robot.radius; local ry = 2*r; -- note: this is skyblock adjusted
 			local ppos = {x=round(pos.x/r+0.5)*r,y=round(pos.y/ry+0.5)*ry+1,z=round(pos.z/r+0.5)*r}; -- just on top of basic_protect:protector!
 			local meta = minetest.get_meta(ppos);
 			local name = meta:get_string("name");
@@ -595,7 +595,7 @@ minetest.register_node("basic_robot:button"..number,
 	on_punch = function(pos, node, player)
 		local name = player:get_player_name(); if name==nil then return end
 		local round = math.floor;
-		local r = 32; local ry = 2*r;
+		local r = basic_robot.radius; local ry = 2*r;
 		local ppos = {x=round(pos.x/r+0.5)*r,y=round(pos.y/ry+0.5)*ry+1,z=round(pos.z/r+0.5)*r};
 		local meta = minetest.get_meta(ppos);
 		local name = meta:get_string("name");
@@ -618,7 +618,7 @@ minetest.register_node("basic_robot:button_"..number,
 	on_punch = function(pos, node, player)
 		local name = player:get_player_name(); if name==nil then return end
 		local round = math.floor;
-		local r = 32; local ry = 2*r;
+		local r = basic_robot.radius; local ry = 2*r;
 		local ppos = {x=round(pos.x/r+0.5)*r,y=round(pos.y/ry+0.5)*ry+1,z=round(pos.z/r+0.5)*r};
 		local meta = minetest.get_meta(ppos);
 		local name = meta:get_string("name");
@@ -640,7 +640,7 @@ minetest.register_node("basic_robot:button_"..number,
 	on_punch = function(pos, node, player)
 		local name = player:get_player_name(); if name==nil then return end
 		local round = math.floor;
-		local r = 32; local ry = 2*r;
+		local r = basic_robot.radius; local ry = 2*r;
 		local ppos = {x=round(pos.x/r+0.5)*r,y=round(pos.y/ry+0.5)*ry+1,z=round(pos.z/r+0.5)*r};
 		local meta = minetest.get_meta(ppos);
 		local name = meta:get_string("name");
@@ -674,6 +674,9 @@ register_robot_button_custom(280,"puzzle_diode")
 register_robot_button_custom(281,"puzzle_NOT")
 register_robot_button_custom(282,"puzzle_delayer")
 register_robot_button_custom(283,"puzzle_platform")
+
+register_robot_button_custom(284,"puzzle_giver")
+register_robot_button_custom(285,"puzzle_checker")
 
 
 
@@ -1184,7 +1187,7 @@ basic_robot.commands.crypto =  {encrypt = encrypt, decrypt = decrypt, scramble =
 
 local is_same_block = function(pos1,pos2)
 	local round = math.floor;
-	local r = 32; local ry = 2*r; -- note: this is skyblock adjusted
+	local r = basic_robot.radius; local ry = 2*r; -- note: this is skyblock adjusted
 	local ppos1 = {round(pos1.x/r+0.5)*r,round(pos1.y/ry+0.5)*ry,round(pos1.z/r+0.5)*r};
 	local ppos2 = {round(pos2.x/r+0.5)*r,round(pos2.y/ry+0.5)*ry,round(pos2.z/r+0.5)*r};
 	return ppos1[1]==ppos2[1] and ppos1[2]==ppos2[2] and ppos1[3] == ppos2[3]
@@ -1351,3 +1354,116 @@ basic_robot.commands.puzzle = {
 		return true
 	end,
 }
+
+--   VIRTUAL PLAYER   --
+
+
+local Vplayer = {};
+function Vplayer:new(name) -- constructor
+	if not basic_robot.data[name].obj then return end -- only make it for existing robot
+	if basic_robot.virtual_players[name] then return end -- already exists
+
+	local o = {}
+	setmetatable(o, self)
+	self.__index = self
+	o.obj = basic_robot.data[name].obj;
+	o.data = basic_robot.data[name];
+	
+	local spawnpos = o.data.spawnpos;
+	local meta = minetest.get_meta(spawnpos); if not meta then return end
+	o.inv = meta:get_inventory();
+	
+	basic_robot.virtual_players[name] = o;
+end
+ 
+ -- functions
+ function Vplayer:getpos() return self.obj:getpos() end
+ function Vplayer:remove() end
+ function Vplayer:setpos() end
+ function Vplayer:move_to() end
+ function Vplayer:punch() end
+ function Vplayer:rightlick() end
+ function Vplayer:get_hp() return 20 end
+ function Vplayer:set_hp() return 20 end
+ 
+ function Vplayer:get_inventory() return self.inv end
+ function Vplayer:get_wield_list() return "main" end
+ function Vplayer:get_wield_index() return 1 end
+ function Vplayer:get_wielded_item() return self.inv:get_stack("main", 1) end
+ function Vplayer:set_wielded_item() end
+ function Vplayer:set_armor_groups() end
+ function Vplayer:get_armor_groups() return {fleshy = 100} end
+ function Vplayer:set_animation() end
+ function Vplayer:get_animation() end
+ function Vplayer:set_attach() end
+ function Vplayer:get_attach() end
+ function Vplayer:set_detach() end
+ function Vplayer:set_bone_position() end
+ function Vplayer:get_bone_position() end
+ function Vplayer:set_properties() end
+ function Vplayer:get_properties() end
+ function Vplayer:is_player() return true end
+ function Vplayer:get_nametag_attributes() end
+ function Vplayer:set_nametag_attributes() end
+ 
+ function Vplayer:set_velocity() end
+ function Vplayer:get_velocity() end
+ function Vplayer:set_acceleration() end
+ function Vplayer:get_acceleration() end
+ function Vplayer:set_yaw() end
+ function Vplayer:get_yaw() end
+ function Vplayer:set_texture_mod() end
+ function Vplayer:get_luaentity() end
+ 
+ function Vplayer:get_player_name() return self.data.name end
+ function Vplayer:get_player_velocity() return {x=0,y=0,z=0} end
+ function Vplayer:get_look_dir() return {x=1,y=0,z=0} end
+ function Vplayer:get_look_vertical() return 0 end
+ function Vplayer:get_look_horizontal() return 0 end
+ function Vplayer:set_look_vertical() end
+ function Vplayer:set_look_horizontal() end
+ function Vplayer:get_breath() return 1 end
+ function Vplayer:set_breath() end
+ function Vplayer:set_attribute() end
+ function Vplayer:get_attribute() end
+ function Vplayer:set_inventory_formspec() end
+ function Vplayer:get_inventory_formspec() return "" end
+ function Vplayer:get_player_control() return {} end
+ function Vplayer:get_player_control_bits() return 0 end
+ function Vplayer:set_physics_override() end
+ function Vplayer:get_physics_override() return {} end
+ function Vplayer:hud_add() end
+ function Vplayer:hud_remove() end
+ function Vplayer:hud_change() end
+ function Vplayer:hud_get() end
+ function Vplayer:hud_set_flags() end
+ function Vplayer:hud_get_flags() return {} end
+ function Vplayer:hud_set_hotbar_itemcount() end
+ function Vplayer:hud_get_hotbar_itemcount() return 0 end
+ function Vplayer:hud_set_hotbar_image() end
+ function Vplayer:hud_get_hotbar_image() return "" end
+ function Vplayer:hud_set_hotbar_selected_image() end
+ function Vplayer:hud_get_hotbar_selected_image() return "" end
+ function Vplayer:set_sky() end
+ function Vplayer:get_sky() end
+ function Vplayer:set_clouds() end
+ function Vplayer:get_clouds() end
+ function Vplayer:override_day_night_ratio() end
+ function Vplayer:get_day_night_ratio() end
+ function Vplayer:set_local_animation() end
+ function Vplayer:get_local_animation() end
+ function Vplayer:set_eye_offset() end
+ function Vplayer:get_eye_offset() end
+ 
+  
+ -- code for act borrowed from: https://github.com/minetest-mods/pipeworks/blob/fa4817136c8d1e62dafd6ab694821cba255b5206/wielder.lua, line 372
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+

@@ -4,11 +4,12 @@
 basic_robot = {};
 ----  SETTINGS  ------
 basic_robot.call_limit = 48; -- how many execution calls per script run allowed
-basic_robot.entry_count = 2 -- how many robot ordinary player can have
+basic_robot.entry_count = 2 -- how many robots ordinary player can have
 basic_robot.advanced_count = 16 -- how many robots player with robot privs can have
+basic_robot.radius = 32; -- divide whole world into blocks of this size - used for managing events like keyboard punches
+basic_robot.password = "password"; -- IMPORTANT: change it before running mod, password used for authentifications
 
-
-basic_robot.bad_inventory_blocks = { -- disallow taking from these nodes inventories
+basic_robot.bad_inventory_blocks = { -- disallow taking from these nodes inventories to prevent player abuses
 	["craft_guide:sign_wall"] = true,
 }
 basic_robot.maxoperations = 2; -- how many operations (dig, generate energy,..) available per run,  0 = unlimited
@@ -17,15 +18,17 @@ basic_robot.dig_require_energy = true; -- does robot require energy to dig?
 
 basic_robot.http_api = minetest.request_http_api(); 
 
-basic_robot.version = "2017/10	/07a";
+basic_robot.version = "2018/02/06a";
 
-basic_robot.data = {}; -- stores all robot data
+basic_robot.data = {}; -- stores all robot related data
 --[[
-[name] = { sandbox= .., bytecode = ..., ram = ..., obj = robot object,spawnpos=...} 
+[name] = { sandbox= .., bytecode = ..., ram = ..., obj = robot object, spawnpos= ..., authlevel = ...} 
 robot object = object of entity, used to manipulate movements and more
 --]]
-basic_robot.ids = {}; -- stores maxid for all players 
---[name] = {id = .., maxid = .. }, current id, how many robot ids player can use
+basic_robot.ids = {}; -- stores maxid for each player
+--[name] = {id = .., maxid = .. }, current id for robot controller, how many robot ids player can use
+
+basic_robot.virtual_players = {}; -- this way robot can interact with the world as "player" TODO
 
 basic_robot.data.listening = {}; -- which robots listen to chat
 dofile(minetest.get_modpath("basic_robot").."/commands.lua")
@@ -38,6 +41,8 @@ local check_code, preprocess_code,is_inside_string;
 
 function getSandboxEnv (name)
 	
+	local authlevel = basic_robot.data[name].authlevel or 0;
+
 	local commands = basic_robot.commands;
 	local directions = {left = 1, right = 2, forward = 3, backward = 4, up = 5, down = 6, 
 		left_down = 7, right_down = 8, forward_down = 9, backward_down = 10,
@@ -114,17 +119,6 @@ function getSandboxEnv (name)
 				return sender,mail
 			end,
 			
-			read_form = function()
-				local fields = basic_robot.data[name].read_form;
-				local sender = basic_robot.data[name].form_sender;
-				basic_robot.data[name].read_form = nil; 
-				basic_robot.data[name].form_sender = nil; 
-				return sender,fields
-			end,
-			
-			show_form = function(playername, form)
-				commands.show_form(name, playername, form)
-			end,
 			
 			send_mail = function(target,mail)
 				if not basic_robot.data[target] then return false end
@@ -157,7 +151,7 @@ function getSandboxEnv (name)
 				end
 			end,
 			
-			fire = function(speed, pitch,gravity, is_entity) -- experimental: fires an projectile
+			fire = function(speed, pitch,gravity, texture, is_entity) -- experimental: fires an projectile
 				local obj = basic_robot.data[name].obj;
 				local pos = obj:getpos();
 				local yaw = obj:getyaw();
@@ -171,7 +165,7 @@ function getSandboxEnv (name)
 						expirationtime = 10,
 						velocity = {x=speed*math.cos(yaw)*math.cos(pitch), y=speed*math.sin(pitch),z=speed*math.sin(yaw)*math.cos(pitch)},
 						size = 5,
-						texture = "default_apple.png",
+						texture = texture or "default_apple.png",
 						acceleration = {x=0,y=-gravity,z=0},
 						collisiondetection = true,
 						collision_removal = true,			
@@ -346,7 +340,7 @@ function getSandboxEnv (name)
 			end,
 			
 			run = function(script)
-				if basic_robot.data[name].isadmin ~= 1 then
+				if basic_robot.data[name].authlevel < 3 then
 					local err = check_code(script);
 					script = preprocess_code(script);
 					if err then 
@@ -485,10 +479,23 @@ function getSandboxEnv (name)
 		env.write_text[dir] = function(text) return commands.write_text(name, dir_id,text) end
 	end
 			
-	-- set up sandbox for puzzle
+	if authlevel>=1 then -- robot privs
+		env.self.read_form = function()
+			local fields = basic_robot.data[name].read_form;
+			local sender = basic_robot.data[name].form_sender;
+			basic_robot.data[name].read_form = nil; 
+			basic_robot.data[name].form_sender = nil; 
+			return sender,fields
+		end
+			
+		env.self.show_form = function(playername, form)
+			commands.show_form(name, playername, form)
+		end
+	end
 	
-	local ispuzzle = basic_robot.data[name].ispuzzle; -- need puzzle privs
-	if ispuzzle == 1 then
+	-- set up sandbox for puzzle
+		
+	if authlevel>=2 then -- puzzle privs
 		basic_robot.data[name].puzzle = {};
 		local data = basic_robot.data[name];
 		local pdata = data.puzzle;
@@ -516,13 +523,11 @@ function getSandboxEnv (name)
 			pdata = pdata,
 			ItemStack = ItemStack,
 		}
+		
 	end
-	
 
 	--special sandbox for admin
-	local isadmin=basic_robot.data[name].isadmin
-
-	if isadmin~=1 then
+	if authlevel<3 then -- is admin?
 		env._G = env;
 	else
 		env.minetest = minetest;
@@ -675,7 +680,7 @@ end
 local function setCode( name, script ) -- to run script: 1. initSandbox 2. setCode 3. runSandbox
 	
 	local err;
-	if basic_robot.data[name].isadmin~=1 then
+	if basic_robot.data[name].authlevel<3 then -- not admin
 		err = check_code(script);
 		script = preprocess_code(script);
 	end
@@ -806,9 +811,7 @@ local function init_robot(obj)
 	basic_robot.data[name].quiet_mode = false; -- can chat globally
 	
 	-- check if admin robot
-	if self.isadmin then basic_robot.data[name].isadmin = 1 end
-	-- can we do puzzles?
-	if self.ispuzzle then basic_robot.data[name].ispuzzle = 1 end
+	basic_robot.data[name].authlevel = self.authlevel or 0
 	
 	--robot appearance,armor...
 	obj:set_properties({infotext = "robot " .. name});
@@ -833,7 +836,7 @@ minetest.register_entity("basic_robot:robot",{
 	--textures={"character.png"},
 	
 	visual="cube",
-	textures={"arrow.png","basic_machine_side.png","face.png","basic_machine_side.png","basic_machine_side.png","basic_machine_side.png"},
+	textures={"topface.png","legs.png","face.png","face-back.png","left-hand.png","right-hand.png"},
 	
 	visual_size={x=1,y=1},
 	running = 0, -- does it run code or is it idle?	
@@ -856,6 +859,8 @@ minetest.register_entity("basic_robot:robot",{
 			end
 			
 			self.owner = data.owner;
+			self.authlevel = data.authlevel;
+			
 			self.spawnpos = {x=data.spawnpos.x,y=data.spawnpos.y,z=data.spawnpos.z};
 			init_robot(self.object);
 			self.running = 1;
@@ -985,7 +990,13 @@ local spawn_robot = function(pos,node,ttl)
 			basic_robot.data[name] = {}; data = basic_robot.data[name];
 			meta:set_string("infotext",minetest.get_gametime().. " code changed ")
 			data.owner = owner;
-			if meta:get_int("admin") == 1 then data.isadmin = 1 end
+			data.authlevel = meta:get_int("authlevel")
+			
+			local sec_hash = minetest.get_password_hash("",data.authlevel.. owner .. basic_robot.password) 
+			if meta:get_string("sec_hash")~= sec_hash then
+				minetest.chat_send_player(owner,"#ROBOT: " .. name .. " is using fake auth level. dig and place again.")
+				return
+			end
 			
 			if not data.obj then
 				--create virtual robot that reports position and other properties
@@ -1007,8 +1018,8 @@ local spawn_robot = function(pos,node,ttl)
 		
 		if not data.bytecode then
 			local script = meta:get_string("code");
-			
-			if data.isadmin~=1 then
+		
+			if data.authlevel<3 then -- not admin
 				err = check_code(script);
 				script = preprocess_code(script);
 			end
@@ -1059,8 +1070,14 @@ local spawn_robot = function(pos,node,ttl)
 	luaent.name = name;
 	luaent.code = meta:get_string("code");
     luaent.spawnpos = {x=pos.x,y=pos.y-1,z=pos.z};
-	if meta:get_int("admin") == 1 then luaent.isadmin = 1 end
-	if meta:get_int("puzzle") == 1 then luaent.ispuzzle = 1 end				
+	luaent.authlevel = meta:get_int("authlevel")
+	
+	local sec_hash = minetest.get_password_hash("",luaent.authlevel.. owner .. basic_robot.password) 
+	if meta:get_string("sec_hash")~= sec_hash then
+		minetest.chat_send_player(owner,"#ROBOT: " .. name .. " is using fake auth level.  dig and place again.")
+		obj:remove();
+		return
+	end
 			
 	local data = basic_robot.data[name];
 	if data == nil then
@@ -1253,6 +1270,9 @@ local on_receive_robot_form = function(pos, formname, fields, sender)
 			
 			if fields.code then 
 				local code = fields.code or "";
+				if string.len(code) > 64000 then 
+					minetest.chat_send_all("#ROBOT: " .. name .. " is spamming with long text.") return 
+				end
 				
 				if meta:get_int("admin") == 1 then
 					local privs = minetest.get_player_privs(name); -- only admin can edit admin robot code
@@ -1346,7 +1366,7 @@ local on_receive_robot_form = function(pos, formname, fields, sender)
 			"  self.reset() resets robot position\n"..
 			"  self.spawnpos() returns position of spawner block\n"..
 			"  self.viewdir() returns vector of view for robot\n"..
-			"  self.fire(speed, pitch,gravity) fires a projectile from robot\n"..
+			"  self.fire(speed, pitch,gravity, texture, is_entity) fires a projectile from robot\n"..
 			"  self.fire_pos() returns last hit position\n"..
 			"  self.label(text) changes robot label\n"..
 			"  self.display_text(text,linesize,size) displays text instead of robot face, if no size return tex\n"..
@@ -1520,6 +1540,9 @@ minetest.register_on_player_receive_fields(
 			local name = string.sub(formname, string.len(robot_formname)+1); -- robot name
 			if fields.OK and fields.code then
 				local item = player:get_wielded_item(); --set_wielded_item(item)
+				if string.len(fields.code) > 1000 then 
+					minetest.chat_send_player(player,"#ROBOT: text too long") return 
+				end
 				item:set_metadata(fields.code);
 				player:set_wielded_item(item);
 				if fields.id then 
@@ -1661,6 +1684,9 @@ minetest.register_on_player_receive_fields(
 						local data = itemstack:get_meta():to_table().fields -- 0.4.16, old minetest.deserialize(itemstack:get_metadata()) 
 						if not data then data = {} end
 						local text = fields.book or "";
+						if string.len(text) > 64000 then 
+							minetest.chat_send_all("#ROBOT: " .. sender .. " is spamming with long text.") return 
+						end
 						data.text = text or ""
 						data.title = fields.title or ""
 						data.text_len = #data.text
@@ -1720,10 +1746,24 @@ minetest.register_node("basic_robot:spawner", {
 	alpha = 150,
 	after_place_node = function(pos, placer)
 		local meta = minetest.env:get_meta(pos)
-		meta:set_string("owner", placer:get_player_name()); 
+		local owner = placer:get_player_name();
+		meta:set_string("owner", owner); 
+		
 		local privs = minetest.get_player_privs(placer:get_player_name()); 
-		if privs.privs then meta:set_int("admin",1) end
-		if privs.puzzle then meta:set_int("puzzle",1) end
+		local authlevel = 0;
+		if privs.privs then -- set auth level depending on privs
+			authlevel = 3
+		elseif privs.puzzle then 
+			authlevel = 2
+		elseif privs.robot then
+			authlevel = 1
+		else
+			authlevel = 0
+		end
+		
+		meta:set_int("authlevel",authlevel)
+		local sec_hash = minetest.get_password_hash("",authlevel .. owner .. basic_robot.password) -- 'digitally sign' authlevel using password
+		meta:set_string("sec_hash", sec_hash);
 	
 		meta:set_string("code","");
 		meta:set_int("id",1); -- initial robot id
@@ -1827,9 +1867,9 @@ minetest.register_craftitem("basic_robot:control", {
 		local owner = user:get_player_name();
 		
 		local script = itemstack:get_metadata();
-		if script == "@" then -- remote control as a tool - notify robot in current block of pointed position
+		if script == "@" then -- remote control as a tool - notify robot in current block of pointed position, using keyboard event type 0
 			local round = math.floor;
-			local r = 32; local ry = 2*r; -- note: this is skyblock adjusted
+			local r = basic_robot.radius; local ry = 2*r; -- note: this is skyblock adjusted
 			local pos  = pointed_thing.under
 			if not pos then return end
 			local ppos = {x=round(pos.x/r+0.5)*r,y=round(pos.y/ry+0.5)*ry+1,z=round(pos.z/r+0.5)*r}; -- just on top of basic_protect:protector!
@@ -1850,7 +1890,7 @@ minetest.register_craftitem("basic_robot:control", {
 		if data and data.sandbox then
 			
 		else
-			minetest.chat_send_player(name, "#remote control: your robot must be running");
+			minetest.chat_send_player(owner, "#remote control: your robot must be running");
 			return
 		end
 		
@@ -1859,7 +1899,7 @@ minetest.register_craftitem("basic_robot:control", {
 		if t1-t0<1 then return end
 		data.remoteuse = t1;
 		
-		if data.isadmin == 1 then
+		if data.authlevel >= 3 then
 			local privs = minetest.get_player_privs(owner); -- only admin can run admin robot
 			if not privs.privs then
 				return
@@ -1872,7 +1912,7 @@ minetest.register_craftitem("basic_robot:control", {
 			return
 		end
 		
-		if not data.isadmin then
+		if data.authlevel<3 then
 			if check_code(script)~=nil then return end
 		end
 		
@@ -1967,3 +2007,5 @@ minetest.register_craft({
 
 minetest.register_privilege("robot", "increased number of allowed active robots")
 minetest.register_privilege("puzzle", "allow player to use puzzle. namespace in robots")
+
+print('[MOD]'.. " basic_robot " .. basic_robot.version .. " loaded.")
