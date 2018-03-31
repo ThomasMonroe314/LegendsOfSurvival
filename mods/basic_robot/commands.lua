@@ -277,35 +277,35 @@ basic_robot.no_teleport_table = {
 }
 
 
---basic_robot.commands.pickup = function(r,name)
+basic_robot.commands.pickup = function(r,name)
 	
-	--if r>8 then return false end
+	if r>8 then return false end
 
-	--local pos = basic_robot.data[name].obj:getpos();
-	--local spos = basic_robot.data[name].spawnpos; -- position of spawner block
-	--local meta = minetest.get_meta(spos);
-	--local inv = minetest.get_meta(spos):get_inventory();
-	--local picklist = {};
+	local pos = basic_robot.data[name].obj:getpos();
+	local spos = basic_robot.data[name].spawnpos; -- position of spawner block
+	local meta = minetest.get_meta(spos);
+	local inv = minetest.get_meta(spos):get_inventory();
+	local picklist = {};
 	
-	--for _,obj in pairs(minetest.get_objects_inside_radius({x=pos.x,y=pos.y,z=pos.z}, r)) do
-		--local lua_entity = obj:get_luaentity() 
-		--if not obj:is_player() and lua_entity and lua_entity.itemstring then
-			--local detected_obj = lua_entity.itemstring or "" 
-			--if not basic_robot.no_teleport_table[detected_obj] then -- object on no teleport list 
-				---- put item in chest
-				--local stack = ItemStack(lua_entity.itemstring) 
-				--picklist[#picklist+1]=detected_obj;
-				--if inv:room_for_item("main", stack) then
-					--inv:add_item("main", stack);
-					--obj:setpos({x=0,y=0,z=0}) -- no dupe
-				--end
-			--obj:remove();
-			--end
-		--end
-	--end
-	--if not picklist[1] then return nil end
-	--return picklist
---end
+	for _,obj in pairs(minetest.get_objects_inside_radius({x=pos.x,y=pos.y,z=pos.z}, r)) do
+		local lua_entity = obj:get_luaentity() 
+		if not obj:is_player() and lua_entity and lua_entity.itemstring then
+			local detected_obj = lua_entity.itemstring or "" 
+			if not basic_robot.no_teleport_table[detected_obj] then -- object on no teleport list 
+				-- put item in chest
+				local stack = ItemStack(lua_entity.itemstring) 
+				picklist[#picklist+1]=detected_obj;
+				if inv:room_for_item("main", stack) then
+					inv:add_item("main", stack);
+					obj:setpos({x=0,y=0,z=0}) -- no dupe
+				end
+			obj:remove();
+			end
+		end
+	end
+	if not picklist[1] then return nil end
+	return picklist
+end
 
 
 basic_robot.commands.read_node = function(name,dir)
