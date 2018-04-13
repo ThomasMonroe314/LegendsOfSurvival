@@ -131,7 +131,7 @@ if minetest.setting_getbool("enable_pvp") then
 			else
 				minetest.chat_send_player(hittername, "PvP is disabled for you")
 			end
-			minetest.chat_send_player(localname, "Player " .. hittername .. " tried hurting you. It failed")
+			--minetest.chat_send_player(localname, "Player " .. hittername .. " tried hurting you. It failed")
 			return true
 		end)
 	end
